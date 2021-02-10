@@ -56,7 +56,13 @@ fun main() = Window(title = "FitCSVTool-GUI") {
                         DataFlavor.javaFileListFlavor
                     ) as List<*>
                 droppedFiles.first()?.let {
-                    filePath.value = TextFieldValue((it as File).absolutePath)
+                    val file = (it as File)
+                    filePath.value = TextFieldValue(file.absolutePath)
+                    if (!file.isDirectory && file.extension == "fit") {
+                        decode(file.absolutePath)
+                    } else {
+                        logText.value = TextFieldValue("Fitファイルを指定してください")
+                    }
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -68,17 +74,21 @@ fun main() = Window(title = "FitCSVTool-GUI") {
     window.iconImage = Toolkit.getDefaultToolkit().getImage("app_icon.png")
 }
 
+private fun decode(filePath: String) {
+    try {
+        val result = FitToCSV(filePath).execute()
+        logText.value = TextFieldValue(result)
+    } catch (e: Exception) {
+        logText.value = TextFieldValue("ERROR: ${e.message}")
+    }
+}
+
 @Composable
 fun firstRow(filePath: MutableState<TextFieldValue>) {
     val decodeButtonEnabled = !File(filePath.value.text).isDirectory
     val decodeButtonClickFunction = {
         if (decodeButtonEnabled) {
-            try {
-                val result = FitToCSV(filePath.value.text).execute()
-                logText.value = TextFieldValue(result)
-            } catch (e: Exception) {
-                logText.value = TextFieldValue("ERROR: ${e.message}")
-            }
+            decode(filePath.value.text)
         }
     }
     Row(
