@@ -19,7 +19,7 @@ class FitToCSV(val inFilePath: String) {
     private val printBytesAsHex = false
     private val test = false
     private val checkIntegrity = false
-    private val showInvalidValues = false
+    private val showInvalidValues = true
     private val invalidsToEmpty = false
     private val hideUnknownData = false
     private val generateDataFile = false
